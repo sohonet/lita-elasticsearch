@@ -11,8 +11,8 @@ module Lita
         "es health" => "Elasticsearch Cluster Health"
       })
 
-      route(/^es\s+index.*summary/, :index_summary, help: {
-        "es index summary" => "Elasticsearch Index Summary by Prefix"
+      route(/^es\s+index-summary/, :index_summary, help: {
+        "es index-summary" => "Elasticsearch Index Summary by Prefix"
       })
 
       route(/^es\s+index\s(?<input>.*)$/, :index_info, help: {
