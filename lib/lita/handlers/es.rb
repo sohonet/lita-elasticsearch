@@ -84,9 +84,9 @@ module Lita
             index_info[key]['replica_shard_count'] = value['indices'].inject(0) { |sum, hash| sum + hash['replica_shard_count'].to_i }
           end
 
-          output = sprintf("%-30s|%7s|%12s|%10s|%16s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTSS ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
+          output = sprintf("%-30s|%7s|%12s|%10s|%16s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
           index_info.keys.sort.each do |index_prefix|
-            output += sprintf("%-30s|%7s|%12s|%10s|%16s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{index_info[index_prefix]['doc_count']} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ", " #{index_info[index_prefix]['replica_shard_count']} ")
+            output += sprintf("%-30s|%7s|%12s|%10s|%16s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ", " #{index_info[index_prefix]['replica_shard_count']} ")
           end
           response.reply "```#{output.strip}```"
         rescue Exception => e
@@ -102,7 +102,7 @@ module Lita
           if index_info.has_key?(index_prefix)
             output = sprintf("%-30s|%8s|%12s|%10s|%16s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
             index_info[index_prefix]['indices'].each do |index|
-              output += sprintf("%-30s|%8s|%12s|%10s|%16s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{index['doc_count']} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ", " #{index['replica_shard_count']} ")
+              output += sprintf("%-30s|%8s|%12s|%10s|%16s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{num_with_commas(index['doc_count'])} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ", " #{index['replica_shard_count']} ")
             end
             response.reply "```#{output.strip}```"
           else
@@ -115,6 +115,10 @@ module Lita
 
       def to_gb(bytes)
         bytes.to_i/1024/1024/1024
+      end
+
+      def num_with_commas(num)
+        num.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
       end
 
       Lita.register_handler(self)
