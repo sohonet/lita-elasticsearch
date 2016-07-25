@@ -67,7 +67,7 @@ module Lita
           index_key = index_name.gsub(/-\d{4}(\.|-)\d{2}(\.|-)\d{2}/, '')
           index_info[index_key] = {} unless index_info.has_key?(index_key)
           index_info[index_key]['indices'] = [] unless index_info[index_key].has_key?('indices')
-          index_info[index_key]['indices'] << {'index_name' => index_name, 'index_health' => index_health, 'store_size' => store_size, 'pri_store_size' => pri_store_size, 'pri_shard_count' => pri_shard_count, 'replica_shard_count' => replica_shard_count}
+          index_info[index_key]['indices'] << {'index_name' => index_name, 'index_health' => index_health, 'doc_count' => doc_count, 'store_size' => store_size, 'pri_store_size' => pri_store_size, 'pri_shard_count' => pri_shard_count, 'replica_shard_count' => replica_shard_count}
         end
         index_info
       end
@@ -78,14 +78,15 @@ module Lita
           index_info.each_pair do |key, value|
             index_info[key]['index_count'] = value['indices'].length()
             index_info[key]['store_size'] = value['indices'].inject(0) { |sum, hash| sum + hash['store_size'].to_i }
+            index_info[key]['doc_count'] = value['indices'].inject(0) { |sum, hash| sum + hash['doc_count'].to_i }
             index_info[key]['pri_store_size'] = value['indices'].inject(0) { |sum, hash| sum + hash['pri_store_size'].to_i }
             index_info[key]['pri_shard_count'] = value['indices'].inject(0) { |sum, hash| sum + hash['pri_shard_count'].to_i }
             index_info[key]['replica_shard_count'] = value['indices'].inject(0) { |sum, hash| sum + hash['replica_shard_count'].to_i }
           end
 
-          output = sprintf("%-30s|%7s|%10s|%16s|%16s\n", "INDEX PREFIX ", " COUNT ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
+          output = sprintf("%-30s|%7s|%12s|%10s|%16s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTSS ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
           index_info.keys.sort.each do |index_prefix|
-            output += sprintf("%-30s|%7s|%10s|%16s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ", " #{index_info[index_prefix]['replica_shard_count']} ")
+            output += sprintf("%-30s|%7s|%12s|%10s|%16s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{index_info[index_prefix]['doc_count']} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ", " #{index_info[index_prefix]['replica_shard_count']} ")
           end
           response.reply "```#{output.strip}```"
         rescue Exception => e
@@ -99,13 +100,13 @@ module Lita
           index_info = indices
 
           if index_info.has_key?(index_prefix)
-            output = sprintf("%-30s|%8s|%10s|%16s|%16s\n", "INDEX ", " HEALTH ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
+            output = sprintf("%-30s|%8s|%12s|%10s|%16s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ", " REPLICA SHARDS ")
             index_info[index_prefix]['indices'].each do |index|
-              output += sprintf("%-30s|%8s|%10s|%16s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ", " #{index['replica_shard_count']} ")
+              output += sprintf("%-30s|%8s|%12s|%10s|%16s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{index['doc_count']} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ", " #{index['replica_shard_count']} ")
             end
             response.reply "```#{output.strip}```"
           else
-            response.reply "Index prefix '#{index_prefix}' not known. Try `es index summary` for a list of prefixes"
+            response.reply "Index prefix '#{index_prefix}' not known. Try `es index-summary` for a list of prefixes"
           end
         rescue Exception => e
           response.reply "Error running command. ```#{e.message}```"
