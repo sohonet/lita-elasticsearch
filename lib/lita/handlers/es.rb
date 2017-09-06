@@ -58,6 +58,10 @@ module Lita
         index_info = {}
         @client = connect()
         indices_response = @client.cat.indices(bytes: "b")
+        # {"health"=>"green", "status"=>"open", "index"=>"logstash-2017.07.26", "pri"=>"3", "rep"=>"1", 
+        # "docs.count"=>"26283321", "docs.deleted"=>"0", "store.size"=>"46350009906", 
+        # "pri.store.size"=>"23143853364"},
+
         indices_response.each do |line|
 
           index_key = line['index'].gsub(/-\d{4}(\.|-)\d{2}(\.|-)\d{2}/, '')
@@ -98,7 +102,7 @@ module Lita
           if index_info.has_key?(index_prefix)
             output = sprintf("%-30s|%8s|%15s|%10s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
             index_info[index_prefix]['indices'].each do |index|
-              output += sprintf("%-30s|%8s|%15s|%10s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{num_with_commas(index['doc_count'])} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ")
+              output += sprintf("%-30s|%8s|%15s|%10s|%16s\n", "#{index['index']} ", " #{index['health']} ", " #{num_with_commas(index['docs.count'])} ", " #{to_gb(index['store.size'])} ", " #{index['pri']} ")
             end
             response.reply "```#{output.strip}```"
           else
