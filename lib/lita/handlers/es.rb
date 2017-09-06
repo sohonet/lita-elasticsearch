@@ -89,7 +89,7 @@ module Lita
             output_lines << sprintf("%-30s|%7s|%15s|%10s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ")
             if output_lines.count == 30
               output = sprintf("%-30s|%7s|%15s|%10s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
-              output += output_lines.join("\n")
+              output += output_lines.join
               response.reply "```#{output.strip}```"
               output_lines = []
             end
