@@ -95,7 +95,7 @@ module Lita
             end
           end
           output = sprintf("%-30s|%7s|%15s|%10s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
-          output += output_lines.join("\n")
+          output += output_lines.join
           response.reply "```#{output.strip}```"
         rescue Exception => e
           response.reply "Error running command. ```#{e.message}```"
@@ -109,10 +109,18 @@ module Lita
           index_info = indices
 
           if index_info.has_key?(index_prefix)
-            output = sprintf("%-30s|%8s|%15s|%10s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+            output_lines = []
             index_info[index_prefix]['indices'].each do |index|
-              output += sprintf("%-30s|%8s|%15s|%10s|%16s\n", "#{index['index']} ", " #{index['health']} ", " #{num_with_commas(index['docs.count'])} ", " #{to_gb(index['store.size'])} ", " #{index['pri']} ")
+              output_lines << sprintf("%-30s|%8s|%15s|%10s|%16s\n", "#{index['index']} ", " #{index['health']} ", " #{num_with_commas(index['docs.count'])} ", " #{to_gb(index['store.size'])} ", " #{index['pri']} ")
+              if output_lines.count == 30
+                output = sprintf("%-30s|%8s|%15s|%10s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+                output += output_lines.join
+                response.reply "```#{output.strip}```"
+                output_lines = []
+              end
             end
+            output = sprintf("%-30s|%8s|%15s|%10s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+            output += output_lines.join
             response.reply "```#{output.strip}```"
           else
             response.reply "Index prefix '#{index_prefix}' not known. Try `es index-summary` for a list of prefixes"
