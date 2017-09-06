@@ -84,7 +84,6 @@ module Lita
           end
 
           output_lines = []
-          count = 0
           index_info.keys.sort.each do |index_prefix|
             output_lines << sprintf("%-30s|%7s|%15s|%10s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ")
             if output_lines.count == 40
