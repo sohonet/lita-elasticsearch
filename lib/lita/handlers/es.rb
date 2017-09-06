@@ -50,6 +50,7 @@ module Lita
 
         rescue Exception => e
           response.reply "Error running command. ```#{e.message}```"
+          response.reply "```#{e.backtrace}```"
         end
       end
 
@@ -78,13 +79,14 @@ module Lita
             index_info[key]['pri_shard_count'] = value['indices'].inject(0) { |sum, hash| sum + hash['pri'].to_i }
           end
 
-          output = sprintf("%-30s|%7s|%15s|%10s|%16s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+          output = sprintf("%-30s|%7s|%15s|%10s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
           index_info.keys.sort.each do |index_prefix|
-            output += sprintf("%-30s|%7s|%15s|%10s|%16s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ")
+            output += sprintf("%-30s|%7s|%15s|%10s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ")
           end
           response.reply "```#{output.strip}```"
         rescue Exception => e
           response.reply "Error running command. ```#{e.message}```"
+          response.reply "```#{e.backtrace}```"
         end
       end
 
@@ -94,9 +96,9 @@ module Lita
           index_info = indices
 
           if index_info.has_key?(index_prefix)
-            output = sprintf("%-30s|%8s|%15s|%10s|%16s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+            output = sprintf("%-30s|%8s|%15s|%10s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
             index_info[index_prefix]['indices'].each do |index|
-              output += sprintf("%-30s|%8s|%15s|%10s|%16s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{num_with_commas(index['doc_count'])} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ")
+              output += sprintf("%-30s|%8s|%15s|%10s|%16s\n", "#{index['index_name']} ", " #{index['index_health']} ", " #{num_with_commas(index['doc_count'])} ", " #{to_gb(index['store_size'])} ", " #{index['pri_shard_count']} ")
             end
             response.reply "```#{output.strip}```"
           else
@@ -104,6 +106,7 @@ module Lita
           end
         rescue Exception => e
           response.reply "Error running command. ```#{e.message}```"
+          response.reply "```#{e.backtrace}```"
         end
       end
 
