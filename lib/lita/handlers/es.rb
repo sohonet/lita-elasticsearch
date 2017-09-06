@@ -83,10 +83,19 @@ module Lita
             index_info[key]['pri_shard_count'] = value['indices'].inject(0) { |sum, hash| sum + hash['pri'].to_i }
           end
 
-          output = sprintf("%-30s|%7s|%15s|%10s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+          output_lines = []
+          count = 0
           index_info.keys.sort.each do |index_prefix|
-            output += sprintf("%-30s|%7s|%15s|%10s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ")
+            output_lines << sprintf("%-30s|%7s|%15s|%10s|%16s\n", "#{index_prefix} ", " #{index_info[index_prefix]['index_count']} ", " #{num_with_commas(index_info[index_prefix]['doc_count'])} ",  " #{to_gb(index_info[index_prefix]['store_size'])} ", " #{index_info[index_prefix]['pri_shard_count']} ")
+            if output_lines.count == 30
+              output = sprintf("%-30s|%7s|%15s|%10s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+              output += output_lines.join("\n")
+              response.reply "```#{output.strip}```"
+              output_lines = []
+            end
           end
+          output = sprintf("%-30s|%7s|%15s|%10s|%16s\n", "INDEX PREFIX ", " COUNT ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
+          output += output_lines.join("\n")
           response.reply "```#{output.strip}```"
         rescue Exception => e
           response.reply "Error running command. ```#{e.message}```"
