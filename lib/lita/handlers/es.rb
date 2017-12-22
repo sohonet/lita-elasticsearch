@@ -57,7 +57,7 @@ module Lita
       def indices()
         index_info = {}
         @client = connect()
-        indices_response = @client.cat.indices(bytes: "b")
+        indices_response = @client.cat.indices(bytes: "b", format: 'json')
         # {"health"=>"green", "status"=>"open", "index"=>"logstash-2017.07.26", "pri"=>"3", "rep"=>"1", 
         # "docs.count"=>"26283321", "docs.deleted"=>"0", "store.size"=>"46350009906", 
         # "pri.store.size"=>"23143853364"},
