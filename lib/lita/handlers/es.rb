@@ -64,7 +64,7 @@ module Lita
 
         indices_response.each do |line|
 
-          index_key = line['index'].gsub(/-\d{4}(\.|-)\d{2}(\.|-)\d{2}/, '')
+          index_key = line['index'].gsub(/-\d{4}.\d{2}-\d{4}.\d{2}|(-\d)?-\d{4}(\.|-)\d{2}((\.|-)\d{2})?|(_|-)(\d{,3}(_|-))?\d+.\d{2}((_|-)v\d)?/, '')
           index_info[index_key] = {} unless index_info.has_key?(index_key)
           index_info[index_key]['indices'] = [] unless index_info[index_key].has_key?('indices')
           index_info[index_key]['indices'] << line
