@@ -111,7 +111,8 @@ module Lita
 
           if index_info.has_key?(index_prefix)
             output_lines = []
-            index_info[index_prefix]['indices'].each do |index|
+            sorted_indices = index_info[index_prefix]['indices'].sort_by{|entry| entry['index']}
+            sorted_indices.each do |index|
               output_lines << sprintf("%-30s|%8s|%15s|%10s|%16s\n", "#{index['index']} ", " #{index['health']} ", " #{num_with_commas(index['docs.count'])} ", " #{to_gb(index['store.size'])} ", " #{index['pri']} ")
               if output_lines.count == 40
                 output = sprintf("%-30s|%8s|%15s|%10s|%16s\n", "INDEX ", " HEALTH ", " DOCUMENTS ", " SIZE(GB) ", " PRIMARY SHARDS ")
