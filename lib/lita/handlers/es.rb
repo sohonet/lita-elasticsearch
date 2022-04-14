@@ -4,7 +4,7 @@ module Lita
   module Handlers
     class Es < Handler
 
-      feature :async_dispatch
+      # feature :async_dispatch
       config :es_host, type: String, default: 'localhost'
 
       route(/^es\s+health/, :health, help: {
